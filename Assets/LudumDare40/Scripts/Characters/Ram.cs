@@ -4,13 +4,23 @@ using UnityEngine;
 
 public class Ram : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public float matingRecoveryTime = 3;
+    Sheep _sheep;
+
+    // Use this for initialization
+    void Start()
+    {
+
+        this._sheep = GetComponent<Sheep>();
+    }
+
+    private void OnEnable()
+    {
+        this._sheep = GetComponent<Sheep>();
+    }
+
+    public void Mating()
+    {
+        this._sheep.OnMating(matingRecoveryTime);
+    }
 }

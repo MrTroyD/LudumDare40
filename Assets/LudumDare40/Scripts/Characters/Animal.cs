@@ -53,7 +53,7 @@ public class Animal : MonoBehaviour {
 
         if (movementVector.magnitude > movementSpeed)
         {
-            movementVector *= .5f;
+            movementVector *= .75f;
         }
         
         this.transform.Translate(movementVector * Time.deltaTime);
