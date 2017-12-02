@@ -18,7 +18,21 @@ public class Ewe : MonoBehaviour {
 	void Start () {
 
         this._sheep = GetComponent<Sheep>();
-	}
+
+        AddToManager();
+    }
+
+    private void AddToManager()
+    {
+        if (SheepManager.instance)
+        {
+            SheepManager.instance.AddSheep(this);
+        }
+        else
+        {
+            Invoke("AddToManager", .15f);
+        }
+    }
 
     private void OnEnable()
     {

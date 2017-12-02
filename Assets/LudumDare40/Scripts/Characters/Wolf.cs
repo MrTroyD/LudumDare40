@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Wolf : MonoBehaviour {
 
+    public static Wolf instance;
+
     public bool bark;
 
     private Animal _animal;
@@ -17,6 +19,7 @@ public class Wolf : MonoBehaviour {
     void OnEnable()
     {
         this._animal = GetComponent<Animal>();
+        Wolf.instance = this;
     }
 
     // Update is called once per frame
