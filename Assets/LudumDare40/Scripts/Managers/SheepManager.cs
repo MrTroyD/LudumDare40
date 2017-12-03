@@ -49,4 +49,49 @@ public class SheepManager : MonoBehaviour {
     {
         this.femaleSheep.Add(ewe);
     }
+
+    public void OnEat(GameObject sheep)
+    {
+        if (sheep.GetComponent<Ewe>())
+        {
+            Wolf.instance.OnFeed(20f);
+            Ewe ewe = sheep.GetComponent<Ewe>();
+            if (this.femaleSheep.Contains(ewe))
+            {
+                this.femaleSheep.Remove(ewe);
+            }
+
+
+            //This may agro any Rams in the area
+            foreach (Ram ram in this.maleSheep)
+            {
+                WanderSheep ramWanderSheepScript = ram.GetComponent<WanderSheep>();
+                if (ramWanderSheepScript.target == sheep.transform)
+                {
+                    ramWanderSheepScript.StartLookingForMate();
+                }
+            }
+        }
+        else if (sheep.GetComponent<Ram>())
+        {
+            Wolf.instance.OnFeed(20f);
+            Ram ram = sheep.GetComponent<Ram>();
+            if(this.maleSheep.Contains(ram))
+            {
+                this.maleSheep.Remove(ram);
+            }
+
+            //Add to score
+        }
+        else if (sheep.GetComponent<Lamb>())
+        {
+            Wolf.instance.OnFeed(5f);
+            foreach (Ram ram in this.maleSheep)
+            {
+                ram.GetComponent<Sheep>().GetAngry(4);
+            }
+        }
+
+        Destroy(sheep);
+    }
 }

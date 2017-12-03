@@ -14,6 +14,8 @@ public class Ram : MonoBehaviour {
     {
         this._sheep = GetComponent<Sheep>();
         AddToManager();
+
+        this.name = this.name.Replace("(Clone)", "");
     }
 
     private void AddToManager()

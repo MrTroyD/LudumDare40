@@ -419,7 +419,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1306852109184324}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.5, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0.91, y: 0.5, z: 5.93}
   m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_Children:
   - {fileID: 4190871926535944}
@@ -682,6 +682,8 @@ MonoBehaviour:
   sex: 0
   mateReady: 0
   mateRecoveryTime: 5
+  _aggression: 0
+  _matingDesire: 0
 --- !u!114 &114111088946644490
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -720,6 +722,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   matingRecoveryTime: 3
+  mateReady: 0
 --- !u!114 &114441455650269678
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -866,7 +869,7 @@ MonoBehaviour:
   moveLeft: 0
   moveRight: 0
   controlsActive: 1
-  movementSpeed: 7.4
+  movementSpeed: 5
 --- !u!114 &114946451550674224
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -932,6 +935,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxWidth: 2
   _behaviourChangeTimer: 0.5
+  _currentBevaiour: 0
+  _target: {fileID: 0}
   _destinations: []
 --- !u!136 &136835226488803928
 CapsuleCollider:

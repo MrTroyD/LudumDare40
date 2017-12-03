@@ -31,6 +31,11 @@ public class WanderSheep : MonoBehaviour {
     [SerializeField]
     private List<WhiskerNode> _destinations;
         
+    public Transform target
+    {
+        get { return this._target; }
+    }
+
 	// Use this for initialization
 	void Start () {
         this._animal = this.GetComponent<Animal>();
@@ -57,7 +62,7 @@ public class WanderSheep : MonoBehaviour {
         
         if (this._currentBevaiour != Behaviour.Stand)
         {
-            this.transform.Translate(this.transform.forward * Time.deltaTime);
+            this.transform.Translate(this.transform.forward * Time.deltaTime * this._animal.movementSpeed);
 
             float xPos = this.transform.position.x;
             float yPos = this.transform.position.z;
@@ -164,6 +169,12 @@ public class WanderSheep : MonoBehaviour {
          
         
 	}
+
+    public void StopLookingForMate()
+    {
+        this._behaviourChangeTimer *= .5f;
+        this._currentBevaiour = Behaviour.Stand;
+    }
 
     public void StartLookingForMate()
     {
