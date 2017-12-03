@@ -19,7 +19,7 @@ public class HealthBar : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        this._rectTransform.sizeDelta = new Vector2(this._rectTransform.sizeDelta.x, (this.wolfReference.health/100) * 200);
+        this._rectTransform.sizeDelta = new Vector2((this.wolfReference.health / 100) * 200, this._rectTransform.sizeDelta.y);
 		
 	}
 }

@@ -15,14 +15,13 @@ public class WanderSheep : MonoBehaviour {
 
     }
 
+
     public float maxWidth = 11;
     public SpriteRenderer sprite;
 
-    [SerializeField]
-    Color _angryColor;
-
-    [SerializeField]
-    Color _normalColor;
+    Color _angryColor = new Color(1, .5f, .5f);//FFA4A4FF;
+    
+    Color _normalColor = new Color(1, 1, 1);
 
     [SerializeField]
     private float _behaviourChangeTimer;
@@ -48,15 +47,19 @@ public class WanderSheep : MonoBehaviour {
 	void Start () {
         this._animal = this.GetComponent<Animal>();
         this._sheep = this.GetComponent<Sheep>();
-        this._destinations = new List<WhiskerNode>(this.GetComponentsInChildren<WhiskerNode>()); 
-        for (int i = 0, n = this._destinations.Count; i < n; i++)
+        if (this._destinations == null)
         {
-            this._destinations[i].rotation = ((float)i / (float)n) * 360;
-            this._destinations[i].rayLength = maxWidth;
-            this._destinations[i].UpdateNode();
+            this._destinations = new List<WhiskerNode>(this.GetComponentsInChildren<WhiskerNode>());
+            for (int i = 0, n = this._destinations.Count; i < n; i++)
+            {
+                this._destinations[i].rotation = ((float)i / (float)n) * 360;
+                this._destinations[i].rayLength = maxWidth;
+                this._destinations[i].UpdateNode();
+            }
         }
-
         this.sprite = GetComponentInChildren<SpriteRenderer>();
+
+        if (GetComponent<Lamb>()) this._currentBevaiour = Behaviour.Frolick;
     }
 
     void OnEnable()
@@ -69,6 +72,7 @@ public class WanderSheep : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        
 
         this.sprite.color = this._sheep.aggression > 3 ? this._angryColor : this._normalColor;
 
@@ -102,6 +106,10 @@ public class WanderSheep : MonoBehaviour {
 
             this.transform.position = new Vector3(xPos, this.transform.position.y, yPos);
         }
+        else
+        {
+            this.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        }
 
 
 
@@ -111,10 +119,10 @@ public class WanderSheep : MonoBehaviour {
 
 
             //Check to see if Wolf is around
-            if (Vector3.Distance(this.transform.position, Wolf.instance.transform.position) < 5 && this._sheep.aggression < 1f && this._currentBevaiour != Behaviour.Flee)
+            if (Wolf.instance && Vector3.Distance(this.transform.position, Wolf.instance.transform.position) < 5 && this._sheep.aggression < 1f && this._currentBevaiour != Behaviour.Flee)
             {
-                print("Wolf too close");
-                this._behaviourChangeTimer = 2;
+//                print("Wolf too close");
+                this._behaviourChangeTimer = .5f;
                 this.transform.LookAt(Wolf.instance.transform, Vector3.up);
                 this.transform.rotation = Quaternion.Euler(0, -this.transform.rotation.eulerAngles.y, 0);
                 this._currentBevaiour = Behaviour.Flee;
@@ -129,8 +137,11 @@ public class WanderSheep : MonoBehaviour {
                 switch (this._currentBevaiour)
                 {
                     case Behaviour.Frolick:
-                        this._behaviourChangeTimer = 2;
+                        SetNewDirection();
+                        this._behaviourChangeTimer = 1;
                         this._currentBevaiour = Behaviour.Stand;
+
+
                         break;
 
                     case Behaviour.Wander:
@@ -181,6 +192,17 @@ public class WanderSheep : MonoBehaviour {
                         }
                         break;
                     case Behaviour.SearchForMate:
+
+                        if (this.GetComponent<Lamb>())
+                        {
+                            this.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                            SetNewDirection();
+                            print("How lamb!?");
+                            this._behaviourChangeTimer = 1f;
+                            this._currentBevaiour = Behaviour.Frolick;
+                            return;
+                        }
+
                         if (this._target != null)
                         {
                             this._behaviourChangeTimer = .25f;
@@ -189,8 +211,8 @@ public class WanderSheep : MonoBehaviour {
                         else
                         {
                             this._behaviourChangeTimer = 2f;
-                            DoMateSearch();
                             this._currentBevaiour = Behaviour.Stand;
+                            DoMateSearch();
                         }
                         break;
 
@@ -292,12 +314,23 @@ public class WanderSheep : MonoBehaviour {
         this.transform.rotation = Quaternion.Euler(0, this.transform.rotation.eulerAngles.y, 0);
     }
 
-    void SetNewDirection()
+    public void SetNewDirection()
     {
         this._animal.moveUp = false;
         this._animal.moveDown = false;
         this._animal.moveLeft = false;
         this._animal.moveRight = false;
+
+        if (this._destinations == null)
+        {
+            this._destinations = new List<WhiskerNode>(this.GetComponentsInChildren<WhiskerNode>());
+            for (int i = 0, n = this._destinations.Count; i < n; i++)
+            {
+                this._destinations[i].rotation = ((float)i / (float)n) * 360;
+                this._destinations[i].rayLength = maxWidth;
+                this._destinations[i].UpdateNode();
+            }
+        }
 
         for (int i = 0; i < this._destinations.Count; i++)
         {

@@ -29,6 +29,11 @@ public class Sheep : MonoBehaviour {
      void Update()
     {
 
+        if (this.GetComponent<Lamb>())
+        {
+            return;
+        }
+
         if (this._aggression > 0.5f)
         {
             this._aggression -= (Time.deltaTime * .5f);
@@ -53,15 +58,15 @@ public class Sheep : MonoBehaviour {
                 mateRecoveryTime = 0;
             }
         }
-        else
+        else if (mateReady)
         {
             this._matingDesire += Time.deltaTime;
 
-            if (this._matingDesire >= 7f)
+            if (this._matingDesire >= 7f && SheepManager.instance.breedingEnabled)
             {
-                if (Random.Range(0, 1f) < .9f)
-                {
-                    this.GetComponent<WanderSheep>().StartLookingForMate();
+                if (Random.Range(0, 1f) < .9f && this.GetComponent<WanderSheep>())
+                { 
+                        this.GetComponent<WanderSheep>().StartLookingForMate();
                 }
             }
         }
@@ -69,7 +74,7 @@ public class Sheep : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!mateReady) return;
+        if (!mateReady || !SheepManager.instance.breedingEnabled) return;
 
         if (collision.gameObject.tag == "Edible")
         {
@@ -100,8 +105,8 @@ public class Sheep : MonoBehaviour {
         {
             this._aggression = 5;
         }
-
-        this.GetComponent<WanderSheep>().CheckAggression();
+        
+        if (this.GetComponent<WanderSheep>()) this.GetComponent<WanderSheep>().CheckAggression();
     }
 
     public void GetFrightened(float aggressionAdjustment)
@@ -113,6 +118,6 @@ public class Sheep : MonoBehaviour {
             this._aggression = -3;
         }
 
-        this.GetComponent<WanderSheep>().CheckAggression();
+       if (this.GetComponent<WanderSheep>()) this.GetComponent<WanderSheep>().CheckAggression();
     }
 }

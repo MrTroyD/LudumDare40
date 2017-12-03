@@ -20,6 +20,9 @@ public class Wolf : MonoBehaviour {
     private float _eatingTimer;
 
     private bool _on = true;
+    private bool _jumpToggle = false;
+
+    [SerializeField]
     private float _health = 100;
     
     [SerializeField]
@@ -28,6 +31,9 @@ public class Wolf : MonoBehaviour {
     private bool _gameStarted;
 
     public SpriteRenderer wolfSprite;
+
+    public Sprite normalSprite;
+    public Sprite deathSprite;
 
     public float hunger
     {
@@ -41,8 +47,7 @@ public class Wolf : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         this._animal = GetComponent<Animal>();
-        Invoke("OnStartBark", 1);
-
+     
         this._gameStarted = false;
 	}
 
@@ -54,10 +59,20 @@ public class Wolf : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        if (!GameManager.instance.gameActive) return;
 
-        if (this._gameStarted)
+        if (this._animal.moveRight)
         {
-            float hungerDeplete = Time.deltaTime * .8f;
+            this.wolfSprite.flipX = false;
+        }
+        else if (this._animal.moveLeft)
+        {
+            this.wolfSprite.flipX = true;
+        }
+
+        if (this._gameStarted && !this._eating)
+        { 
+            float hungerDeplete = Time.deltaTime * 2;
             this._hunger -= hungerDeplete;
         }
 
@@ -85,9 +100,15 @@ public class Wolf : MonoBehaviour {
         {
             this._animal.movementSpeed = Wolf.HUNGRY_SPEED;
         }
+
+        if (this._hunger < 0)
+        {
+            this._health += this._hunger;
+            this._hunger = 0;
+        }
 	}
 
-    void OnStartBark()
+    public void OnStartBark()
     {
         this._gameStarted = true;
         this._animal.controlsActive = false;
@@ -96,9 +117,9 @@ public class Wolf : MonoBehaviour {
 
         print("Text pop up of Bark! Bark!");
         this.barkCount = 3;
-        InvokeRepeating("Bark", .15f, .5f);
+        InvokeRepeating("Bark", .15f, .15f);
 
-        Invoke("EnableControls", 2f);
+        Invoke("EnableControls", 1.5f);
 
     }
 
@@ -107,29 +128,44 @@ public class Wolf : MonoBehaviour {
 
         if (this._eating) return;
 
-        print("SFX of Bark Bark!");
         this.barkCount = 3;
-        print("Text pop up of Bark! Bark!");
-        InvokeRepeating("Bark", .15f, .25f);
+
+        InvokeRepeating("Bark", .15f, .15f);
+        
 
         this._animal.controlsActive = false;
 
         //This is temporary. We have to do this with a real timer not with Invoke
-        Invoke("EnableControls", 2f);
+        Invoke("EnableControls", 1.5f);
     }
 
     void Bark()
     {
         SheepManager.instance.Frighten();
 
+        this._jumpToggle = !this._jumpToggle;
+
+        if (this._jumpToggle)
+        {
+            this.wolfSprite.transform.localPosition = new Vector3(0, .3f, 0);
+            AudioManager.instance.PlaySound("Bark");
         this.barkTransform.gameObject.SetActive(true);
         this.barkTransform.localPosition = new Vector3(Random.Range(-.5f, .5f), Random.Range(1, 1.25f), 0);
+        }
+        else
+        {
+            this.wolfSprite.transform.localPosition = new Vector3(0, .15f, 0);
+            this.barkTransform.gameObject.SetActive(false);
+        }
+
 
     }
 
     public void EnableControls()
     {
         CancelInvoke("Bark");
+        this.wolfSprite.transform.localPosition = new Vector3(0, .15f, 0);
+        this._jumpToggle = false;
 
         this.barkTransform.gameObject.SetActive(false);
         this._animal.controlsActive = true;
@@ -138,7 +174,7 @@ public class Wolf : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!this._eating)
+        if (!this._eating && GameManager.instance.gameActive)
         {
             this._eating = true;
             this._eatingTimer = 2f;
@@ -166,7 +202,7 @@ public class Wolf : MonoBehaviour {
         else
         {
             Ram ram = collision.gameObject.GetComponent<Ram>();
-            if (collision.gameObject.tag == "Edible" && ram)
+            if (collision.gameObject.tag == "Edible" && ram && GameManager.instance.gameActive)
             {
                     OnGetHit(ram);
             }
@@ -186,7 +222,11 @@ public class Wolf : MonoBehaviour {
         ram.GetComponent<Sheep>().GetFrightened(4);
         ram.GetComponent<WanderSheep>().ClearBehaviour();
 
-        this._health -= 10;
+        this._health -= 25;
+
+        AudioManager.instance.StopSound("Bark");
+        AudioManager.instance.PlaySound("Whine");
+        AudioManager.instance.PlaySound("Bonk");
 
         this._animal.moveUp = false;
         this._animal.moveDown = false;
@@ -194,10 +234,14 @@ public class Wolf : MonoBehaviour {
         this._animal.moveRight = false;
 
         this._animal.controlsActive = false;
+        this._jumpToggle = false;
 
+
+        this.barkTransform.gameObject.SetActive(false);
+        this.wolfSprite.transform.localPosition = new Vector3(0, .15f, 0);
 
         //Start blinking
-
+        CancelInvoke("Bark");
         CancelInvoke("EndBlinking");
         CancelInvoke("EnableControls");
         Invoke("EnableControls", 2f);
@@ -219,6 +263,20 @@ public class Wolf : MonoBehaviour {
         this.wolfSprite.enabled = true;
              
         CancelInvoke("Blink");
+    }
+
+    public void OnDied()
+    {
+        CancelInvoke("Blink");
+        CancelInvoke("EndBlinking");
+        CancelInvoke("EnableControls");
+        this._on = true;
+        this.wolfSprite.color = new Color(1, 1, 1);
+
+        this._eating = false;
+        this._animal.controlsActive = false;
+
+        wolfSprite.sprite = deathSprite;
     }
 
 }

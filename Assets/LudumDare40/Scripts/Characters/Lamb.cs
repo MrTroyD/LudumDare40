@@ -17,6 +17,19 @@ public class Lamb : MonoBehaviour {
         DecideSex();
     }
 
+
+    private void AddToManager()
+    {
+        if (SheepManager.instance)
+        {
+            SheepManager.instance.AddSheep(this);
+        }
+        else
+        {
+            Invoke("AddToManager", .15f);
+        }
+    }
+
     private void OnEnable()
     {
         this._sheep = this.GetComponent<Sheep>();
@@ -33,14 +46,16 @@ public class Lamb : MonoBehaviour {
             //This needs to be replaced with a real algo
             if (this._sheep.sex == Sheep.Sex.Male)
             {
+                AudioManager.instance.PlaySound("NewRam");
                 Instantiate(ramPrefab, this.transform.position, this.transform.rotation, this.transform.parent);
             }
             else
             {
+                AudioManager.instance.PlaySound("NewEwe");
                 Instantiate(ewePrefab, this.transform.position, this.transform.rotation, this.transform.parent);
 
             }
-
+            SheepManager.instance.RemoveLamb(this);
             //Tell Sound manager to play sound of change
             Destroy(this.gameObject);
         }
@@ -49,6 +64,9 @@ public class Lamb : MonoBehaviour {
 
     void DecideSex()
     {
+        AddToManager();
+
+        AudioManager.instance.PlaySound((Random.Range(0, 1f) < .5f ? "NewLamb" : "NewLamb2"));
         if (Random.Range(0f, 1f) > .5f)
         {
             this._sheep.sex = Sheep.Sex.Male;
