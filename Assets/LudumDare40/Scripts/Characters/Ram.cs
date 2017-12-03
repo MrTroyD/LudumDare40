@@ -34,6 +34,7 @@ public class Ram : MonoBehaviour {
     {
         this._sheep = GetComponent<Sheep>();
     }
+    
 
     private void Update()
     {

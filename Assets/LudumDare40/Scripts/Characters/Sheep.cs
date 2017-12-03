@@ -31,11 +31,11 @@ public class Sheep : MonoBehaviour {
 
         if (this._aggression > 0.5f)
         {
-            this._aggression -= Time.deltaTime;
+            this._aggression -= (Time.deltaTime * .5f);
         }
         else if (this._aggression < -0.5f)
         {
-            this._aggression += Time.deltaTime;
+            this._aggression += (Time.deltaTime * .5f);
         }
         else
         {

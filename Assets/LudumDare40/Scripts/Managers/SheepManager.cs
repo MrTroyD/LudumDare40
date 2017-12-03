@@ -28,6 +28,8 @@ public class SheepManager : MonoBehaviour {
         foreach(Ram ram in this.maleSheep)
         {
             this._levelAggression += ram.GetComponent<Sheep>().aggression;
+
+            if (femaleSheep.Count < maleSheep.Count + 2) ram.GetComponent<Sheep>().GetAngry(Time.deltaTime); 
         }
 
         //If the ram aggression is over a certain amount. ALL Ram get the highest level of aggression
@@ -88,10 +90,29 @@ public class SheepManager : MonoBehaviour {
             Wolf.instance.OnFeed(5f);
             foreach (Ram ram in this.maleSheep)
             {
-                ram.GetComponent<Sheep>().GetAngry(4);
+                ram.GetComponent<Sheep>().GetAngry(5);
             }
         }
 
         Destroy(sheep);
+    }
+
+    public void Frighten()
+    {
+            Sheep sheep;
+        foreach(Ram ram in this.maleSheep)
+        {
+            sheep = ram.GetComponent<Sheep>();
+            if (sheep.aggression > 3) continue;
+
+            sheep.GetFrightened(.3f);
+
+        }
+
+        foreach(Ewe ewe in this.femaleSheep)
+        {
+            sheep = ewe.GetComponent<Sheep>();
+            ewe.GetComponent<Sheep>().GetFrightened(.3f);
+        }
     }
 }
