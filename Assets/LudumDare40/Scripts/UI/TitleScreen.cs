@@ -9,6 +9,10 @@ public class TitleScreen : MonoBehaviour {
     public RectTransform transitionScreen;
     public Image titleScreenImage;
     public GameObject playButton;
+    public GameObject instructionsButton;
+    public GameObject quitButton;
+
+    public GameObject gameUI;
 
     private bool _transitionIn;
     private bool _transitionOut;
@@ -20,12 +24,18 @@ public class TitleScreen : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+ //       ShowTitleScreen();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
         if (this._transitionOut)
         {
             transitionScreen.localPosition = Vector2.Lerp(Vector2.zero, new Vector2(0, 540), (Time.time - this._timeStart) / this._transitionDuration);
@@ -35,6 +45,8 @@ public class TitleScreen : MonoBehaviour {
                 this._transitionIn = false;
                 this._transitionOut = false;
                 transitionScreen.localPosition = new Vector2(0, -540);
+
+                this.gameObject.SetActive(false);
             }
         }
         else if (this._transitionIn)
@@ -46,6 +58,7 @@ public class TitleScreen : MonoBehaviour {
                 this._transitionIn = false;
                 this._transitionOut = true;
 
+                this.gameUI.SetActive(true);
 
                 GameManager.instance.ShowLevel();
 
@@ -61,8 +74,14 @@ public class TitleScreen : MonoBehaviour {
 
     public void ShowTitleScreen()
     {
+        AudioManager.instance.StopSoundtrack();
+        AudioManager.instance.PlaySound("TitleTrack");
+        this.gameObject.SetActive(true);
+
         titleScreenImage.color = Color.white;
         playButton.SetActive(true);
+        instructionsButton.SetActive(true);
+        quitButton.SetActive(true);
     }
 
     public void StartTransition()
@@ -74,5 +93,12 @@ public class TitleScreen : MonoBehaviour {
         this._transitionIn = true;
 
         playButton.SetActive(false);
+        instructionsButton.SetActive(false);
+        quitButton.SetActive(false);
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }

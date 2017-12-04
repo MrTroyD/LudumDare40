@@ -14,10 +14,13 @@ public class GameManager : MonoBehaviour {
     public GameOverTip toolTip;
     public GameObject ui;
 
+    public TitleScreen titleScreen;
+
     public GameObject eatenOverlay;
     public Text eatenOverlayValue;
 
     private int _sheepEaten;
+    private bool _allowSkip = false;
 
     [SerializeField]
     private GameObject _wolfObject;
@@ -44,10 +47,8 @@ public class GameManager : MonoBehaviour {
         GameManager.instance = this;
 
         DontDestroyOnLoad(this.gameObject);
-
-        this.ui.SetActive(false);
-
-        //Invoke("StartLevel", 1f);
+        
+        Invoke("ShowTitle", .1f);
 	}
 
     public void ShowLevel()
@@ -55,7 +56,10 @@ public class GameManager : MonoBehaviour {
         SheepManager.instance.ClearSheep();
         this._wolfObject.SetActive(true);
 
-        SheepManager.instance.CreateRandomSheep(4);
+        Wolf.instance.ResetWolf();
+        
+
+        SheepManager.instance.CreateRandomSheep(8);
         Invoke("StartLevel", 1f);
 
 
@@ -75,7 +79,7 @@ public class GameManager : MonoBehaviour {
         this.sheepEaten = 0;
 
 
-        this.ui.SetActive(false);
+        this.ui.SetActive(true);
     }
 
 
@@ -85,9 +89,19 @@ public class GameManager : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Escape))
         {
             //put up quit dialog box
+            if (this.gameActive && !this.gameOver)
+            {
+                Wolf.instance.gameObject.SetActive(false);
+                Wolf.instance.ResetWolf();
+                ShowTitle();
+            }
+            else if (this._allowSkip)
+            {
+                ShowTitle();
+            }
 
             //for now just quit
-            Application.Quit();
+            //Application.Quit();
         }
 
         if (!gameOver && gameActive)
@@ -129,6 +143,9 @@ public class GameManager : MonoBehaviour {
                 print("Player died!");
                 gameOver = true;
                 gameActive = false;
+
+                Invoke("AllowSkip", 2);
+                Invoke("ShowTitle", 10);
             }
 
         }
@@ -138,5 +155,18 @@ public class GameManager : MonoBehaviour {
     {
         SheepManager.instance.DisableBreeding();
         toolTip.ShowTip();
+    }
+
+    void AllowSkip()
+    {
+        this._allowSkip = true;
+    }
+
+    void ShowTitle()
+    {
+        ui.SetActive(false);
+        CancelInvoke("ShowTitle");
+        gameOverOverlay.gameObject.SetActive(false);
+        titleScreen.ShowTitleScreen();
     }
 }

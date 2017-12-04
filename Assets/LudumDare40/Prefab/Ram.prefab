@@ -753,6 +753,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   matingRecoveryTime: 3
   mateReady: 0
+  normalSprite: {fileID: 21300000, guid: 0c9f8f151c185b945b982860df4b7213, type: 3}
+  angrySprite: {fileID: 21300000, guid: 44cc85f96120e9b4980ab941ceb3cbb9, type: 3}
 --- !u!114 &114441455650269678
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -976,8 +978,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxWidth: 2
   sprite: {fileID: 212773608200075250}
-  _angryColor: {r: 1, g: 0.6431373, b: 0.6431373, a: 1}
-  _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _behaviourChangeTimer: 0.125
   _currentBevaiour: 1
 --- !u!212 &212773608200075250

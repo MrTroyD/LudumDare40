@@ -19,10 +19,6 @@ public class WanderSheep : MonoBehaviour {
     public float maxWidth = 11;
     public SpriteRenderer sprite;
 
-    Color _angryColor = new Color(1, .5f, .5f);//FFA4A4FF;
-    
-    Color _normalColor = new Color(1, 1, 1);
-
     [SerializeField]
     private float _behaviourChangeTimer;
 
@@ -73,9 +69,6 @@ public class WanderSheep : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         
-
-        this.sprite.color = this._sheep.aggression > 3 ? this._angryColor : this._normalColor;
-
         if (this._currentBevaiour != Behaviour.Stand)
         {
             this.transform.Translate(this.transform.forward * Time.deltaTime * this._animal.movementSpeed);
@@ -116,7 +109,10 @@ public class WanderSheep : MonoBehaviour {
         if (_behaviourChangeTimer > 0)
         {
             this._behaviourChangeTimer -= Time.deltaTime;
-
+            if (this._sheep.aggression > 3 && this._sheep.GetComponent<Ram>())
+            {
+                this._currentBevaiour = Behaviour.TargetWolf;
+            }
 
             //Check to see if Wolf is around
             if (Wolf.instance && Vector3.Distance(this.transform.position, Wolf.instance.transform.position) < 5 && this._sheep.aggression < 1f && this._currentBevaiour != Behaviour.Flee)
@@ -301,7 +297,7 @@ public class WanderSheep : MonoBehaviour {
 
     public void CheckAggression()
     {
-        if (this._sheep.aggression > 3f)
+        if (this._sheep.aggression > 3f && Wolf.instance)
         {
             this._target = Wolf.instance.transform;
 

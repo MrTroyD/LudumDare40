@@ -37,7 +37,7 @@ public class SheepManager : MonoBehaviour {
         {
             this._levelAggression += ram.GetComponent<Sheep>().aggression;
 
-            if (femaleSheep.Count < maleSheep.Count + 2) ram.GetComponent<Sheep>().GetAngry(Time.deltaTime);
+            if (femaleSheep.Count < maleSheep.Count - 2) ram.GetComponent<Sheep>().GetAngry(Time.deltaTime);
         }
         
 
@@ -49,7 +49,7 @@ public class SheepManager : MonoBehaviour {
 
     public void IncreaseSheepLevel()
     {
-        float startPoint = Random.Range(0, 1) < .5f ? -15 : 15;
+        float startPoint = Random.Range(0f, 1f) < .5f ? -15 : 15;
         sheepLevel++;
         GameObject newSheep;
         for (int i = 0; i < sheepLevel + 4; i++)
@@ -186,9 +186,15 @@ public class SheepManager : MonoBehaviour {
             foreach (Ram ram in this.maleSheep)
             {
                 WanderSheep ramWanderSheepScript = ram.GetComponent<WanderSheep>();
-                if (ramWanderSheepScript.target == sheep.transform)
+                if (ramWanderSheepScript &&  ramWanderSheepScript.target == sheep.transform)
                 {
                     ramWanderSheepScript.StartLookingForMate();
+                    ram.GetComponent<Sheep>().GetAngry(2);
+                }
+
+                if (Vector3.Distance(ram.transform.position, Wolf.instance.transform.position) < 3)
+                {
+                    ram.GetComponent<Sheep>().GetAngry(3);
                 }
             }
         }

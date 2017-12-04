@@ -40,7 +40,7 @@ public class Sound
 
     public void Stop()
     {
-        this._source.Stop();
+        if (this._source) this._source.Stop();
     }
 }
 
